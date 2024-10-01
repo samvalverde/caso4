@@ -1,0 +1,25 @@
+version: '3.8'
+
+services:
+  flask-api:
+    build: .
+    ports:
+      - "5000:5000"
+    environment:
+      - MONGO_URI=mongodb+srv://<username>:<password>@cluster0.mongodb.net/<db_name>?retryWrites=true&w=majority
+      - REDIS_HOST=redis
+    depends_on:
+      - redis
+    networks:
+      - flask_network
+
+  redis:
+    image: "redis:alpine"
+    ports:
+      - "6379:6379"
+    networks:
+      - flask_network
+
+networks:
+  flask_network:
+    driver: bridge
