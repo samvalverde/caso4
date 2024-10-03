@@ -1,17 +1,26 @@
 from flask import Flask, jsonify, request
 from pymongo import MongoClient
+import os
 import redis
 import json
+from mongoDb import MongoDatabase  # Importa la clase MongoDatabase
 
 app = Flask(__name__)
 
-# Conectar a MongoDB Atlas
-client = MongoClient("mongodb+srv://<username>:<password>@cluster0.mongodb.net/<db_name>?retryWrites=true&w=majority")
-db = client["dbCaso4"]
-collection = db["productos"]
+# Configuración de la conexión a MongoDB Atlas usando una variable de entorno
+MONGO_URI = os.getenv("MONGO_URI")
+client = MongoClient(MONGO_URI)
 
-# Conectar a Redis
-redis_client = redis.Redis(host='redis', port=6379, decode_responses=True)
+# Inicializar la base de datos usando la clase MongoDatabase
+mongo_db = MongoDatabase(client)
+
+# Configuración de la base de datos Redis
+REDIS_HOST = os.getenv("REDIS_HOST")
+REDIS_PORT = os.getenv("REDIS_PORT")
+REDIS_DB = os.getenv("REDIS_DB")
+
+# Inicializar la conexión a Redis
+redis_client = redis.StrictRedis(host=REDIS_HOST, port=REDIS_PORT, db=REDIS_DB)
 
 # Endpoint que devuelve el 35% de los registros
 @app.route('/productos', methods=['GET'])
@@ -22,7 +31,7 @@ def get_productos():
         return jsonify(json.loads(cached_data))
     
     # Si no hay datos en la cache, obtener de MongoDB
-    productos = list(collection.find().limit(int(60000 * 0.35)))
+    productos = list(mongo_db.collection.find().limit(int(60000 * 0.35)))
     
     # Guardar los resultados en Redis por 5 minutos
     redis_client.setex("productos_35", 300, json.dumps(productos))

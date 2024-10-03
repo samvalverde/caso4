@@ -8,6 +8,8 @@ services:
     environment:
       - MONGO_URI=mongodb+srv://<username>:<password>@cluster0.mongodb.net/<db_name>?retryWrites=true&w=majority
       - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - REDIS_DB=0
     depends_on:
       - redis
     networks:
