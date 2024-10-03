@@ -2,10 +2,8 @@
 FROM python:3.12
 
 # Variables de entorno para la base de datos MongoDB
-ENV DB_HOST_MONGO=mongo
-ENV DB_PORT_MONGO=27017
-ENV DB_USER_MONGO=root
-ENV DB_PASSWORD_MONGO=password
+ENV MONGO_USER=savalverde
+ENV MONGO_PASSWORD=qgMCctgVSrUQQxgC
 
 # Variables de entorno para redis
 ENV REDIS_HOST=redis

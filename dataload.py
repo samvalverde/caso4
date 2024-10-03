@@ -2,11 +2,17 @@ from pymongo import MongoClient
 import random
 from datetime import datetime
 import faker
+import os
 
 # Conectar a MongoDB Atlas usando variables de entorno
-client = MongoClient(os.getenv("MONGO_URI"))
-db = client["dbCaso4"]
-collection = db["productos"]
+MONGO_USER = os.getenv("MONGO_USER")
+MONGO_PASSWORD = os.getenv("MONGO_PASSWORD")
+MONGO_URI = f"mongodb+srv://savalverde:qgMCctgVSrUQQxgC@caso4.1wdz8.mongodb.net/"
+
+client = MongoClient(MONGO_URI)
+
+db = client["caso4Db"]  # Nombre de la base de datos
+collection = db["productos"]  # Nombre de la colección de productos
 
 fake = faker.Faker()
 

@@ -6,10 +6,12 @@ services:
     ports:
       - "5000:5000"
     environment:
-      - MONGO_URI=mongodb+srv://<username>:<password>@cluster0.mongodb.net/<db_name>?retryWrites=true&w=majority
+      - MONGO_USER=savalverde
+      - MONGO_PASSWORD=qgMCctgVSrUQQxgC
       - REDIS_HOST=redis
       - REDIS_PORT=6379
-      - REDIS_DB=0
+    dns:
+      - 8.8.8.8
     depends_on:
       - redis
     networks:
