@@ -14,6 +14,8 @@ Werkzeug = "^3.0.4"
 dnspython = "^2.6.1"
 faker = "^30.1.0"
 
+[tool.poetry.scripts]
+load = "dataload:main"
 
 [build-system]
 requires = ["poetry-core"]

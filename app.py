@@ -1,5 +1,6 @@
 from flask import Flask, jsonify, request
 from pymongo import MongoClient
+from bson import ObjectId
 import os
 import redis
 import json
@@ -23,21 +24,40 @@ REDIS_PORT = os.getenv("REDIS_PORT", 6379)
 REDIS_DB = os.getenv("REDIS_DB", 0)
 redis_client = redis.StrictRedis(host=REDIS_HOST, port=REDIS_PORT, db=REDIS_DB)
 
+# Entrada
+@app.route('/')
+def home():
+    return "Caso 4 - Conexiones de Datos y Concurrencia en REST"
+
 # Endpoint que devuelve el 35% de los registros
 @app.route('/productos', methods=['GET'])
 def get_productos():
-    # Intentar obtener los datos desde la cache Redis
-    cached_data = redis_client.get("productos_35")
-    if cached_data:
-        return jsonify(json.loads(cached_data))
+    try:
+        # Parámetros de paginación
+        page = int(request.args.get('page', 1))  # Página actual, por defecto 1
+        limit = int(request.args.get('limit', 100))  # Número de productos por página, por defecto 100
+        
+        # Calcular desde dónde devolver los productos
+        skip = (page - 1) * limit
+        
+        # Intentar obtener los datos desde la cache Redis
+        cached_data = redis_client.get(f"productos_page_{page}")
+        if cached_data:
+            return jsonify(json.loads(cached_data))
 
-    # Si no hay datos en la cache, obtener de MongoDB
-    productos = list(collection.find().limit(int(60000 * 0.35)))
+        # Si no hay datos en la cache, obtener de MongoDB
+        productos = list(collection.find().skip(skip).limit(limit))
+        
+        # Convertir ObjectId a string para que sea serializable en JSON
+        for producto in productos:
+            producto["_id"] = str(producto["_id"])
 
-    # Guardar los resultados en Redis por 5 minutos
-    redis_client.setex("productos_35", 300, json.dumps(productos))
-    
-    return jsonify(productos)
+        # Guardar los resultados en Redis por 5 minutos
+        redis_client.setex(f"productos_page_{page}", 300, json.dumps(productos))
+        
+        return jsonify(productos)
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 
 # Endpoint para insertar nuevos productos en MongoDB
 @app.route('/productos', methods=['POST'])
