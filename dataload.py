@@ -9,7 +9,11 @@ MONGO_USER = os.getenv("MONGO_USER")
 MONGO_PASSWORD = os.getenv("MONGO_PASSWORD")
 MONGO_URI = f"mongodb+srv://savalverde:qgMCctgVSrUQQxgC@caso4.1wdz8.mongodb.net/"
 
-client = MongoClient(MONGO_URI)
+# Configuración de la conexión con un pool de tamaño fijo
+client = MongoClient(
+    MONGO_URI,
+    maxPoolSize=50  # Tamaño máximo del pool de conexiones
+)
 
 db = client["caso4Db"]  # Nombre de la base de datos
 collection = db["productos"]  # Nombre de la colección de productos
