@@ -1,13 +1,13 @@
 # Caso 4 - conexiones de datos y concurrencia en REST
 
 ## Descripción
-Este proyecto consiste en una API RESTful creada con Flask que se conecta a MongoDB Atlas para manejar 60,000 registros ficticios. También se implementa Redis como caché para mejorar el rendimiento de las consultas.
+Este proyecto consiste en una API RESTful creada con Flask que se conecta a MongoDB Atlas para manejar 60,000 registros ficticios. También se implementa Redis como caché para mejorar el rendimiento de las consultas. Se harán pruebas usand Postman y Newman para ejecutar 20 hilos de clientes concurrentes, enviando peticiones cada 233ms a los tres endpoints manejados en el API: /productos/limit, productos/cached y productos/pool.
 
 ## Documentación
 
-![Docker starting stats.](image-1.png)
-![Docker ending stats.](image-2.png)
 ![Newman summary.](newman-exec-summary.png)
+
+![Docker execution time stats sample.](docker-stats-sample.png)
 
 ### 1. Uso de CPU:
 1. Flask API: El uso de CPU varía, con picos alrededor del 17.06%, y bajadas de hasta 0.22%. Se observa que durante los momentos de mayor carga, el uso de CPU sube significativamente, lo que indica que el procesamiento de solicitudes puede estar demandando recursos a medida que más clientes acceden al sistema. Además, se aprecia que el uso de CPU es mayor en las primeras 5 iteraciones apróx y a partir de cierto punto el máximo de CPU se mantiene en 14.38%.
@@ -29,5 +29,3 @@ Este proyecto consiste en una API RESTful creada con Flask que se conecta a Mong
 El uso de CPU para la API Flask es donde se ven los mayores cambios bajo carga. Esto indicaría que es el componente que podría requerir optimización si se busca manejar mayores volúmenes de tráfico.
 Redis está operando de manera eficiente y apenas utiliza CPU y memoria, lo que es un buen indicador de su desempeño bajo el uso como caché.
 Uso de memoria en ambos contenedores es bajo y no se acerca al límite asignado, lo que indica que no hay problemas de memoria.
-
-## Instrucciones
